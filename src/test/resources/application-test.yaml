@@ -1,0 +1,5 @@
+spring:
+  kafka:
+    bootstrap-servers: dummy:9092
+    consumer:
+      enabled: false

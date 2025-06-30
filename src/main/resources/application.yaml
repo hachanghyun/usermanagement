@@ -1,4 +1,6 @@
 spring:
+  profiles:
+    active: docker
   datasource:
     url: jdbc:h2:mem:testdb
     driver-class-name: org.h2.Driver
@@ -17,18 +19,6 @@ spring:
     user:
       name: admin
       password: 1212
-  kafka:
-    bootstrap-servers: localhost:9092
-    consumer:
-      group-id: message-consumer-group
-      auto-offset-reset: earliest
-    producer:
-      key-serializer: org.apache.kafka.common.serialization.StringSerializer
-      value-serializer: org.apache.kafka.common.serialization.StringSerializer
-  data:
-    redis:
-      host: localhost
-      port: 6379
 
 
 
