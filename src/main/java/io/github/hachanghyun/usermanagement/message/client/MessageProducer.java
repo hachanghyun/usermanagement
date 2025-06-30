@@ -22,14 +22,13 @@ public class MessageProducer {
     public void sendMessage(String phone, String message, String name) {
         String payload = String.join(",", phone, message, name);
         System.out.println("✅ Kafka 전송 시도: " + payload);
-        CompletableFuture<SendResult<String, String>> future =
-                kafkaTemplate.send(TOPIC, payload).completable();
+
+        CompletableFuture<SendResult<String, String>> future = kafkaTemplate.send(TOPIC, payload);
 
         future.whenComplete((result, ex) -> {
             if (ex == null) {
                 RecordMetadata meta = result.getRecordMetadata();
-                log.info("✅ Kafka 전송 성공: payload={}, offset={}, partition={}",
-                        payload, meta.offset(), meta.partition());
+                log.info("✅ Kafka 전송 성공: payload={}, offset={}, partition={}", payload, meta.offset(), meta.partition());
             } else {
                 log.error("❌ Kafka 전송 실패: payload={}, error={}", payload, ex.getMessage());
             }
