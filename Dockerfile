@@ -12,3 +12,4 @@ EXPOSE 8080
 
 # 실행
 ENTRYPOINT ["java", "-jar", "app.jar"]
+

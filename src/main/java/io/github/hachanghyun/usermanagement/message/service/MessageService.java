@@ -6,11 +6,13 @@ import io.github.hachanghyun.usermanagement.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
+import lombok.extern.slf4j.Slf4j;
 
 import java.time.LocalDate;
 import java.time.Period;
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class MessageService {
@@ -22,12 +24,14 @@ public class MessageService {
     public void sendMessagesByAgeGroup(String ageGroupText, String message) {
         int age;
         try {
+            log.info("@@@@@@@@@TEST222@@@@@@@@");
             age = Integer.parseInt(ageGroupText.replaceAll("[^0-9]", ""));
         } catch (NumberFormatException e) {
             throw new IllegalArgumentException("올바르지 않은 연령대 형식입니다. 예: 20대, 30대");
         }
 
         List<User> users = userRepository.findAll();
+        log.info("📋 전체 유저 수: {}", users.size());
         int currentYear = LocalDate.now().getYear();
 
         users.stream()
@@ -44,6 +48,7 @@ public class MessageService {
                     Boolean acquired = redisTemplate.opsForValue().setIfAbsent(key, "1");
 
                     if (Boolean.TRUE.equals(acquired)) {
+                        log.info("📲 Kafka 메시지 전송 대상: {}", user.getPhoneNumber());
                         redisTemplate.expire(key, java.time.Duration.ofMinutes(1));
                         messageProducer.sendMessage(user.getPhoneNumber(), message, user.getName());
                     }

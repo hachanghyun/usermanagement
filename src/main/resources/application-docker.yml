@@ -1,11 +1,1 @@
-spring:
-  kafka:
-    bootstrap-servers: kafka:9092
-    consumer:
-      group-id: user-group
-      auto-offset-reset: earliest
-    producer:
-      key-serializer: org.apache.kafka.common.serialization.StringSerializer
-      value-serializer: org.apache.kafka.common.serialization.StringSerializer
-    properties:
-      security.protocol: PLAINTEXT
+
