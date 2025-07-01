@@ -37,5 +37,11 @@ spring:
     properties:
       security.protocol: PLAINTEXT
 
+logging:
+  file:
+    name: ../spring-logs/app.log   # 로그 파일 경로
+  pattern:
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%level] %msg%n"
+
 
 

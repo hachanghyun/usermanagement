@@ -10,18 +10,12 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class MessagePayload {
+    @JsonProperty("phoneNumber")
     private String phoneNumber;
+    @JsonProperty("message")
     private String message;
+    @JsonProperty("name")
     private String name;
 
-    @JsonCreator
-    public MessagePayload(
-            @JsonProperty("phoneNumber") String phoneNumber,
-            @JsonProperty("message") String message,
-            @JsonProperty("name") String name) {
-        this.phoneNumber = phoneNumber;
-        this.message = message;
-        this.name = name;
-    }
 }
 

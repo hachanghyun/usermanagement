@@ -29,9 +29,9 @@ public class MessageProducer {
         future.whenComplete((result, ex) -> {
             if (ex == null) {
                 RecordMetadata meta = result.getRecordMetadata();
-                log.info("✅ Kafka 전송 성공: payload={}, offset={}, partition={}", payload, meta.offset(), meta.partition());
+                log.info("Kafka 전송 성공: payload={}, offset={}, partition={}", payload, meta.offset(), meta.partition());
             } else {
-                log.error("❌ Kafka 전송 실패: payload={}, error={}", payload, ex.getMessage());
+                log.error("Kafka 전송 실패: payload={}, error={}", payload, ex.getMessage());
             }
         });
     }

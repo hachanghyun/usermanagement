@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 import lombok.extern.slf4j.Slf4j;
 
 import java.time.LocalDate;
-import java.time.Period;
 import java.util.List;
 
 @Slf4j
@@ -31,7 +30,7 @@ public class MessageService {
         }
 
         List<User> users = userRepository.findAll();
-        log.info("📋 전체 유저 수: {}", users.size());
+        log.info("전체 유저 수: {}", users.size());
         int currentYear = LocalDate.now().getYear();
 
         users.stream()
@@ -48,17 +47,17 @@ public class MessageService {
                     Boolean acquired = redisTemplate.opsForValue().setIfAbsent(key, "1");
 
                     if (Boolean.TRUE.equals(acquired)) {
-                        log.info("📲 Kafka 메시지 전송 대상: {}", user.getPhoneNumber());
+                        log.info("Kafka 메시지 전송 대상: {}", user.getPhoneNumber());
 
                         // ✅ 여기에서 카카오톡 RateLimiter 검사 추가
                         if (!kakaoRateLimiterService.tryAcquire("kakao-send")) {
-                            log.warn("❌ 카카오톡 분당 전송 제한 초과 - {}는 메시지 전송 제외", user.getPhoneNumber());
+                            log.warn("카카오톡 분당 전송 제한 초과 - {}는 메시지 전송 제외", user.getPhoneNumber());
                             return; // 또는 continue;
                         }
 
                         redisTemplate.expire(key, java.time.Duration.ofMinutes(1));
 
-                        log.info("📤 Kafka 전송 준비: phone={}, message={}, name={}",
+                        log.info("Kafka 전송 준비: phone={}, message={}, name={}",
                                 user.getPhoneNumber(), message, user.getName());
 
                         messageProducer.sendMessage(user.getPhoneNumber(), message, user.getName());
