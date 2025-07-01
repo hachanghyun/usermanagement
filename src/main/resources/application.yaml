@@ -39,9 +39,10 @@ spring:
 
 logging:
   file:
-    name: ../spring-logs/app.log   # 로그 파일 경로
+    name: /logs/app.log     # 컨테이너 내부 경로 기준
   pattern:
     file: "%d{yyyy-MM-dd HH:mm:ss} [%level] %msg%n"
-
+  level:
+    root: INFO
 
 

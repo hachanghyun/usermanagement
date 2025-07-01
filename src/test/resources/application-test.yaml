@@ -2,4 +2,6 @@ spring:
   kafka:
     bootstrap-servers: dummy:9092
     consumer:
-      enabled: false
+      auto-offset-reset: earliest
+    properties:
+      enable.auto.commit: false

@@ -1,6 +1,7 @@
 # usermanagement
 
 ## 도커 실행
+    ./gradlew build         # 먼저 Spring Boot jar 빌드
     docker-compose down -v # 이전 포트 설정 삭제 + 볼륨 초기화
     docker-compose up --build # 새 포트 설정 반영해서 컨테이너 재생성
 
