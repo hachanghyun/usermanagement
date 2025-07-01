@@ -17,8 +17,7 @@ public class MessageController {
 
     @PostMapping
     public ResponseEntity<String> sendMessage(@RequestBody SendMessageRequest request) {
-        log.info("@@@@@@@@@TEST111@@@@@@@@");
-        System.out.println("#### 들어옴");
+        log.info("Message API 시작!!!!");
         messageService.sendMessagesByAgeGroup(request.getAgeGroup(), request.getMessage());
         return ResponseEntity.ok("메시지 전송 요청 완료");
     }

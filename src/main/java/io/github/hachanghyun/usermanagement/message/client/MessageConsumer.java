@@ -1,6 +1,7 @@
 package io.github.hachanghyun.usermanagement.message.client;
 
 import io.github.hachanghyun.usermanagement.message.dto.KakaoRequest;
+import io.github.hachanghyun.usermanagement.message.payload.MessagePayload;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -20,17 +21,12 @@ public class MessageConsumer {
     private final WebClient smsClient;
 
     @KafkaListener(topics = "message-topic", groupId = "message-group")
-    public void consume(String payload) {
+    public void consume(MessagePayload payload) {
+        log.info("📥 Kafka 수신: {}", payload);
         try {
-            String[] parts = StringUtils.splitPreserveAllTokens(payload, ",", 3); // phone,message,name
-            if (parts.length < 3) {
-                log.warn("잘못된 payload: {}", payload);
-                return;
-            }
-
-            String phone = parts[0];
-            String message = parts[1];
-            String name = parts[2];
+            String phone = payload.getPhoneNumber();
+            String message = payload.getMessage();
+            String name = payload.getName();
             String fullMessage = name + "님, 안녕하세요. 현대 오토에버입니다.\n" + message;
 
             kakaoClient.post()
@@ -57,4 +53,5 @@ public class MessageConsumer {
             log.error("메시지 처리 중 예외 발생", e);
         }
     }
+
 }

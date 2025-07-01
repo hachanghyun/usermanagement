@@ -1,5 +1,6 @@
 package io.github.hachanghyun.usermanagement.message.client;
 
+import io.github.hachanghyun.usermanagement.message.payload.MessagePayload;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.producer.RecordMetadata;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -12,18 +13,18 @@ import java.util.concurrent.CompletableFuture;
 @Component
 public class MessageProducer {
 
-    private final KafkaTemplate<String, String> kafkaTemplate;
+    private final KafkaTemplate<String, MessagePayload> kafkaTemplate;
     private static final String TOPIC = "message-topic";
 
-    public MessageProducer(KafkaTemplate<String, String> kafkaTemplate) {
+    public MessageProducer(KafkaTemplate<String, MessagePayload> kafkaTemplate) {
         this.kafkaTemplate = kafkaTemplate;
     }
 
     public void sendMessage(String phone, String message, String name) {
-        String payload = String.join(",", phone, message, name);
-        System.out.println("✅ Kafka 전송 시도: " + payload);
+        MessagePayload payload = new MessagePayload(phone, message, name);
 
-        CompletableFuture<SendResult<String, String>> future = kafkaTemplate.send(TOPIC, payload);
+        log.info("🛫 Kafka 전송: {}", payload);
+        CompletableFuture<SendResult<String, MessagePayload>> future = kafkaTemplate.send(TOPIC, payload);
 
         future.whenComplete((result, ex) -> {
             if (ex == null) {
