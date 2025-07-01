@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.context.annotation.Profile;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -15,6 +16,7 @@ import reactor.core.publisher.Mono;
 @Component
 @RequiredArgsConstructor
 @ConditionalOnProperty(name = "kafka.enabled", havingValue = "true", matchIfMissing = true)
+@Profile("!test")
 public class MessageConsumer {
 
     private final WebClient kakaoClient;
@@ -22,7 +24,7 @@ public class MessageConsumer {
 
     @KafkaListener(topics = "message-topic", groupId = "message-group")
     public void consume(MessagePayload payload) {
-        log.info("📥 Kafka 수신: {}", payload);
+        log.info("Kafka 수신: {}", payload);
         try {
             String phone = payload.getPhoneNumber();
             String message = payload.getMessage();

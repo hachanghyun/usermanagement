@@ -23,7 +23,7 @@ public class MessageProducer {
     public void sendMessage(String phone, String message, String name) {
         MessagePayload payload = new MessagePayload(phone, message, name);
 
-        log.info("🛫 Kafka 전송: {}", payload);
+        log.info("ㄴKafka 전송: {}", payload);
         CompletableFuture<SendResult<String, MessagePayload>> future = kafkaTemplate.send(TOPIC, payload);
 
         future.whenComplete((result, ex) -> {
