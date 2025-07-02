@@ -35,41 +35,49 @@ public class MessageConsumer {
             String name = payload.getName();
             String fullMessage = name + "님, 안녕하세요. 현대 오토에버입니다.\n" + message;
 
-            // ✅ 카카오톡 rate limit 체크
-            if (!kakaoRateLimiterService.tryAcquire("kakao-send")) {
-                log.warn("카카오톡 분당 전송 제한 초과 - {}는 메시지 전송 제외", phone);
-                return;
+            if (kakaoRateLimiterService.tryAcquire("kakao-send")) {
+                kakaoClient.post()
+                        .uri("/kakaotalk-messages")
+                        .bodyValue(new KakaoRequest(phone, fullMessage))
+                        .retrieve()
+                        .onStatus(
+                                status -> status.is4xxClientError() || status.is5xxServerError(),
+                                response -> {
+                                    log.warn("카카오톡 API 응답 오류: status={}", response.statusCode());
+                                    return Mono.error(new RuntimeException("카카오톡 전송 실패"));
+                                }
+                        )
+                        .toBodilessEntity()
+                        .doOnSuccess(r -> log.info("카카오톡 전송 성공: phone={}", phone))
+                        .onErrorResume(ex -> {
+                            log.warn("카카오톡 실패, SMS로 대체 전송: {}", phone);
+                            return sendSmsFallback(phone, fullMessage)
+                                    .then(Mono.empty()); // Mono<ResponseEntity<Void>> 타입에 맞춤
+                        })
+                        .subscribe();
+            } else {
+                log.warn("카카오톡 분당 전송 제한 초과 - {}는 SMS로 전환", phone);
+                sendSmsFallback(phone, fullMessage).subscribe();
             }
-
-            kakaoClient.post()
-                    .uri("/kakaotalk-messages")
-                    .bodyValue(new KakaoRequest(phone, fullMessage))
-                    .retrieve()
-                    .onStatus(s -> s.value() >= 400, clientResponse -> {
-                        log.warn("카카오톡 실패, SMS로 전환: phone={}", phone);
-
-                        // ✅ SMS rate limit 체크
-                        if (!smsRateLimiterService.tryAcquire("sms-send")) {
-                            log.warn("SMS 분당 전송 제한 초과 - {}는 전송 제외", phone);
-                            return Mono.empty(); // 아무 것도 하지 않음
-                        }
-
-                        return smsClient.post()
-                                .uri(uriBuilder -> uriBuilder.path("/sms").queryParam("phone", phone).build())
-                                .bodyValue("message=" + fullMessage)
-                                .retrieve()
-                                .toBodilessEntity()
-                                .doOnSuccess(r -> log.info("SMS 전송 성공: phone={}", phone))
-                                .doOnError(e -> log.error("SMS 전송 실패", e))
-                                .then(Mono.empty());
-                    })
-                    .toBodilessEntity()
-                    .doOnSuccess(r -> log.info("카카오톡 전송 성공: phone={}", phone))
-                    .doOnError(e -> log.error("카카오톡 전송 실패", e))
-                    .subscribe();
 
         } catch (Exception e) {
             log.error("메시지 처리 중 예외 발생", e);
         }
+    }
+
+    private Mono<Void> sendSmsFallback(String phone, String fullMessage) {
+        if (!smsRateLimiterService.tryAcquire("sms-send")) {
+            log.warn("SMS 분당 전송 제한 초과 - {}는 전송 제외", phone);
+            return Mono.empty(); // 제한 초과 시 아무 동작도 하지 않음
+        }
+
+        return smsClient.post()
+                .uri(uriBuilder -> uriBuilder.path("/sms").queryParam("phone", phone).build())
+                .bodyValue("message=" + fullMessage)
+                .retrieve()
+                .toBodilessEntity()
+                .doOnSuccess(r -> log.info("SMS 전송 성공: phone={}", phone))
+                .doOnError(e -> log.error("SMS 전송 실패", e))
+                .then(); // ✅ Mono<Void> 반환
     }
 }
