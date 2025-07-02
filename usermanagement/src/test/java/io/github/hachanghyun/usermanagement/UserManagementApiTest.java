@@ -101,9 +101,9 @@ class UserManagementApiTest {
     @Test
     public void 관리자_API_조회_수정_삭제() throws Exception {
         User user = userRepository.save(User.builder()
-                .account("user123")
-                .password("pw")
-                .name("이몽룡")
+                .account("testuser")
+                .password("1234")
+                .name("테스트유저")
                 .residentRegistrationNumber("8001011234567")
                 .phoneNumber("01000001111")
                 .address("경기도 성남시 분당구")
@@ -114,7 +114,7 @@ class UserManagementApiTest {
         mockMvc.perform(get("/admin/users")
                         .header("Authorization", basicAuth))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content[0].account").value("user123"));
+                .andExpect(jsonPath("$.content[0].account").value("testuser"));
 
         UserUpdateRequest update = new UserUpdateRequest(null, "경기도 수원시");
         mockMvc.perform(put("/admin/users/" + user.getId())
