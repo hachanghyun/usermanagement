@@ -22,6 +22,7 @@ spring:
     host: redis
     port: 6379
   kafka:
+    enabled: true
     bootstrap-servers: kafka:9092
     consumer:
       group-id: user-group

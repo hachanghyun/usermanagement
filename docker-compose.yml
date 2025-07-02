@@ -2,6 +2,8 @@ services:
   kafka:
     image: bitnami/kafka:latest
     ports: ["9092:9092"]
+    networks:
+      - app-network
     environment:
       KAFKA_KRAFT_CLUSTER_ID: kraft-cluster
       KAFKA_CFG_NODE_ID: 1
@@ -15,6 +17,8 @@ services:
   redis:
     image: redis:alpine
     ports: ["6379:6379"]
+    networks:
+      - app-network  # 이 줄 추가
 
   spring-boot-app:
     build:
@@ -25,8 +29,7 @@ services:
       - kafka
       - redis
     environment:
-      - SPRING_PROFILES_ACTIVE=docker
-      - SPRING_PROFILES_ACTIVE=generate-users
+      - SPRING_PROFILES_ACTIVE=docker,generate-users
     networks:
       - app-network
 
@@ -35,12 +38,16 @@ services:
       context: ./mock-kakao
     ports:
       - "8081:8081"
+    networks:
+      - app-network
 
   mock-sms:
     build:
       context: ./mock-sms
     ports:
       - "8082:8082"
+    networks:
+      - app-network
 
   kafka-ui:
     image: provectuslabs/kafka-ui:latest
@@ -52,6 +59,8 @@ services:
       - KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=kafka:9092
     depends_on:
       - kafka
+    networks:
+      - app-network
 
 networks:
   app-network:

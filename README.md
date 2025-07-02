@@ -59,5 +59,10 @@
 ## 더미 회원가입 데이터 생성 (700명)
     SPRING_PROFILES_ACTIVE=generate-users ./gradlew bootRun
 
+## 도커 스프링부트 로그 확인
+    docker-compose logs -f spring-boot-app
+
 ## pdf에 깃허브주소 추가!!!!
+
+
 

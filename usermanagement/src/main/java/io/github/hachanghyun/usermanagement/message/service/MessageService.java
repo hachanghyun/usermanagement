@@ -18,7 +18,6 @@ public class MessageService {
 
     private final UserRepository userRepository;
     private final MessageProducer messageProducer;
-    private final KakaoRateLimiterService kakaoRateLimiterService;
     private final RedisTemplate<String, String> redisTemplate;
 
     public void sendMessagesByAgeGroup(String ageGroupText, String message) {
@@ -48,12 +47,6 @@ public class MessageService {
 
                     if (Boolean.TRUE.equals(acquired)) {
                         log.info("Kafka 메시지 전송 대상: {}", user.getPhoneNumber());
-
-                        // ✅ 여기에서 카카오톡 RateLimiter 검사 추가
-                        if (!kakaoRateLimiterService.tryAcquire("kakao-send")) {
-                            log.warn("카카오톡 분당 전송 제한 초과 - {}는 메시지 전송 제외", user.getPhoneNumber());
-                            return; // 또는 continue;
-                        }
 
                         redisTemplate.expire(key, java.time.Duration.ofMinutes(1));
 
