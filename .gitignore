@@ -35,3 +35,7 @@ out/
 
 ### VS Code ###
 .vscode/
+
+# Node.js (mock 서버용)
+mock-*/node_modules/
+mock-*/dist/
