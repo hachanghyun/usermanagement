@@ -5,6 +5,7 @@ import io.github.hachanghyun.usermanagement.auth.jwt.JwtTokenProvider;
 import io.github.hachanghyun.usermanagement.common.dto.*;
 import io.github.hachanghyun.usermanagement.user.entity.User;
 import io.github.hachanghyun.usermanagement.user.repository.UserRepository;
+import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +27,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @EmbeddedKafka(partitions = 1, topics = {"your-topic-name"})
 @ActiveProfiles("test")
 @ImportAutoConfiguration(exclude = KafkaAutoConfiguration.class)
+@Transactional
 class UserManagementApiTest {
 
     @Autowired
@@ -43,10 +45,10 @@ class UserManagementApiTest {
     @Autowired
     private JwtTokenProvider jwtTokenProvider;
 
-    @BeforeEach
-    public void setup() {
-        userRepository.deleteAll();
-    }
+//    @BeforeEach
+//    public void setup() {
+//        userRepository.deleteAll();
+//    }
 
     @Test
     public void 회원가입_성공() throws Exception {

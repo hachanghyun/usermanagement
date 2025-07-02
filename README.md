@@ -9,6 +9,10 @@
     docker-compose down -v
     docker-compose up --build
 
+    docker-compose up -d mariadb
+    ./gradlew clean build
+    
+
 ## 로그 확인
     docker logs -f spring-boot-app
 
@@ -18,10 +22,10 @@
     -d '{
     "account": "test123",
     "password": "1234",
-    "name": "악마손창민",
+    "name": "하창현",
     "residentRegistrationNumber": "9001011234567",
     "phoneNumber": "01012345678",
-    "address": "서울특별시 문정동"
+    "address": "서울특별시 금천구"
     }'
 
 ## 관리자 페이지 접속
@@ -46,4 +50,9 @@
     --bootstrap-server localhost:9092 \
     --topic message-topic \
     --from-beginning
+
+## 더미 회원가입 데이터 생성 (700명)
+    SPRING_PROFILES_ACTIVE=generate-users ./gradlew bootRun
+
+## pdf에 깃허브주소 추가!!!!
 

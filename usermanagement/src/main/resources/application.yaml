@@ -1,20 +1,20 @@
 spring:
-  profiles:
-    active: docker
   datasource:
-    url: jdbc:h2:mem:testdb
-    driver-class-name: org.h2.Driver
-    username: sa
-    password:
-  h2:
-    console:
-      enabled: true
+    url: jdbc:mariadb://mariadb:3306/userdb
+    username: user
+    password: userpass
+    driver-class-name: org.mariadb.jdbc.Driver
   jpa:
     hibernate:
       ddl-auto: update
-    show-sql: true
     properties:
-      hibernate.format_sql: true
+      hibernate:
+        dialect: org.hibernate.dialect.MariaDBDialect
+  sql:
+    init:
+      mode: always
+      schema-locations: classpath:schema.sql
+      data-locations: classpath:data.sql
   security:
     user:
       name: admin
@@ -37,12 +37,5 @@ spring:
     properties:
       security.protocol: PLAINTEXT
 
-logging:
-  file:
-    name: /logs/app.log     # 컨테이너 내부 경로 기준
-  pattern:
-    file: "%d{yyyy-MM-dd HH:mm:ss} [%level] %msg%n"
-  level:
-    root: INFO
 
 

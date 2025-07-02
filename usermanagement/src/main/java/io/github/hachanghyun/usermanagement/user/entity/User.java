@@ -20,10 +20,8 @@ public class User {
     private String account;
     private String password;
     private String name;
-
     @Column(name = "residentRegistrationNumber")
     private String residentRegistrationNumber;
-
     private String phoneNumber;
     private String address;
 }

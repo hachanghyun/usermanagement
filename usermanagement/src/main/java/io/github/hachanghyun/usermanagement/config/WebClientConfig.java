@@ -10,7 +10,7 @@ public class WebClientConfig {
     @Bean
     public WebClient kakaoClient() {
         return WebClient.builder()
-                .baseUrl("http://localhost:8081")
+                .baseUrl("http://mock-kakao:8081")
                 .defaultHeaders(headers -> {
                     headers.setBasicAuth("autoever", "1234");
                     headers.set("Content-Type", "application/json");
@@ -21,7 +21,7 @@ public class WebClientConfig {
     @Bean
     public WebClient smsClient() {
         return WebClient.builder()
-                .baseUrl("http://localhost:8082")
+                .baseUrl("http://mock-sms:8082")
                 .defaultHeaders(headers -> {
                     headers.setBasicAuth("autoever", "5678");
                     headers.set("Content-Type", "application/x-www-form-urlencoded");
