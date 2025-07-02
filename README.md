@@ -11,6 +11,7 @@
 
     docker-compose up -d mariadb
     ./gradlew clean build
+    docker-compose up --build -d app kafka redis
     
 
 ## 로그 확인
