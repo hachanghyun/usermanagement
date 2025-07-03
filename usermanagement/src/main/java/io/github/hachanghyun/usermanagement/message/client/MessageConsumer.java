@@ -10,6 +10,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Profile;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
+import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
@@ -33,7 +34,8 @@ public class MessageConsumer {
             String phone = payload.getPhoneNumber();
             String message = payload.getMessage();
             String name = payload.getName();
-            String fullMessage = name + "님, 안녕하세요. 현대 오토에버입니다.\n" + message;
+            //!TODO 스트링 수정
+            String fullMessage = name + "님, 안녕하세요. ㅇㅇㅇㅇㅇㅇ입니다.\n" + message;
 
             if (kakaoRateLimiterService.tryAcquire("kakao-send")) {
                 kakaoClient.post()
@@ -68,16 +70,16 @@ public class MessageConsumer {
     private Mono<Void> sendSmsFallback(String phone, String fullMessage) {
         if (!smsRateLimiterService.tryAcquire("sms-send")) {
             log.warn("SMS 분당 전송 제한 초과 - {}는 전송 제외", phone);
-            return Mono.empty(); // 제한 초과 시 아무 동작도 하지 않음
+            return Mono.empty();
         }
 
         return smsClient.post()
                 .uri(uriBuilder -> uriBuilder.path("/sms").queryParam("phone", phone).build())
-                .bodyValue("message=" + fullMessage)
+                .body(BodyInserters.fromFormData("message", fullMessage))
                 .retrieve()
                 .toBodilessEntity()
                 .doOnSuccess(r -> log.info("SMS 전송 성공: phone={}", phone))
                 .doOnError(e -> log.error("SMS 전송 실패", e))
-                .then(); // ✅ Mono<Void> 반환
+                .then();
     }
 }

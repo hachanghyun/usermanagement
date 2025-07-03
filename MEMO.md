@@ -1,94 +1,22 @@
-## 도커 실행
-    # 먼저 Spring Boot jar 빌드
-    ./gradlew build    
 
-    # 이전 포트 설정 삭제 + 볼륨 초기화
-    docker-compose down -v 
 
-    # 새 포트 설정 반영해서 컨테이너 재생성
-    docker-compose up --build 
-    
-    # DB 포함 실행
-    docker-compose -f docker-compose.yml -f docker-compose.db.yml up --build
+# Redis 분산락 구조 요약
+## 단계	동작 내용
+    setIfAbsent 시도	"msg:lock:{phone}" key가 Redis에 있는지 확인
+    없다면 → 메시지 Kafka로 전송 & expire 1분 설정
+    있다면 → 이미 전송된 사용자이므로 전송 생략
 
-    # DB 없이 실행
-    docker-compose -f docker-compose.yml up --build 
+## 왜 Redis를 써야 할까?
+    Spring Boot 인스턴스가 여러 개 떠 있을 수 있음 (e.g. 도커 컨테이너 여러 개)
+    이 경우 동시에 같은 사용자에게 중복 메시지를 보낼 수 있음
+    Redis는 중앙 저장소라서 → 모든 인스턴스에서 락 공유 가능
+    따라서 동시성 제어와 중복 방지 역할을 완벽하게 해줌
 
-    # 쉘파일 실행
-    chmod +x run-without-db.sh
-    ./run-without-db.sh
-
-## 로그 확인
-    docker logs -f spring-boot-app
-
-## 회원가입 API 테스트
-    curl -X POST http://localhost:8080/users/signup \
-    -H "Content-Type: application/json" \
-    -d '{
-    "account": "test123",
-    "password": "1234",
-    "name": "하창현",
-    "residentRegistrationNumber": "9001011234567",
-    "phoneNumber": "01012345678",
-    "address": "서울특별시 금천구"
-    }'
-
-## 로그인 및 내 정보 조회
-    # 로그인 → JWT 토큰 획득
-    curl -X POST http://localhost:8080/users/login \
-    -H "Content-Type: application/json" \
-    -d '{
-    "account": "test123",
-    "password": "1234"
-    }'
-
-    위 명령 결과에서 "message" 필드에 있는 토큰 값을 추출한 후, 아래 명령에서 ${JWT_TOKEN} 자리에 넣어주세요.
-
-    # 내 정보 조회
-    curl -X GET http://localhost:8080/users/me \
-    -H "Authorization: Bearer ${JWT_TOKEN}"
-
-## 전체 사용자 조회
-    curl -X GET http://localhost:8080/admin/users \
-    -H "Authorization: Basic YWRtaW46MTIxMg=="
-
-## 사용자 정보 수정 (예: userId=1 가정)
-    curl -X PUT http://localhost:8080/admin/users/1 \
-    -H "Authorization: Basic YWRtaW46MTIxMg==" \
-    -H "Content-Type: application/json" \
-    -d '{
-    "address": "경기도 수원시"
-    }'
-
-## 사용자 삭제 (예: userId=1 가정)
-    curl -X DELETE http://localhost:8080/admin/users/1 \
-    -H "Authorization: Basic YWRtaW46MTIxMg=="
-
-## 관리자 페이지 접속
-    curl -X POST http://localhost:8080/admin/messages \
-    -H "Authorization: Basic YWRtaW46MTIxMg==" \
-    -H "Content-Type: application/json" \
-    -d '{"ageGroup": 30, "message": "공지입니다."}'
-
-## 카프카 토픽 전체 조회
-    docker exec -it <kafka-container-name> kafka-topics.sh --bootstrap-server localhost:9092 --list
-    docker exec -it kafka kafka-topics.sh --bootstrap-server localhost:9092 --list
-
-## 특정 토픽 내용 조회
-    docker exec -it <kafka-container-name> kafka-console-consumer.sh \
-    --bootstrap-server localhost:9092 \
-    --topic message-topic \
-    --from-beginning
-
-    docker exec -it kafka kafka-console-consumer.sh \
-    --bootstrap-server localhost:9092 \
-    --topic message-topic \
-    --from-beginning
-
-## 더미 회원가입 데이터 생성 (700명)
-    SPRING_PROFILES_ACTIVE=generate-users ./gradlew bootRun
-
-## 도커 스프링부트 로그 확인
-    docker-compose logs -f spring-boot-app
-
-## pdf에 깃허브주소 추가!!!!
+## 예시 흐름 (전화번호 01012345678)
+    Kafka 전송 전 msg:lock:01012345678 존재 여부 확인
+    없다면:
+        Redis에 저장 (setIfAbsent)
+        TTL 1분 설정 (expire)
+    Kafka 전송
+    있다면:
+        이미 보냈으므로 무시 (중복 전송 방지)

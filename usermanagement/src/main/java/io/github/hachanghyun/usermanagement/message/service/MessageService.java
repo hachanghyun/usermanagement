@@ -46,12 +46,13 @@ public class MessageService {
                     Boolean acquired = redisTemplate.opsForValue().setIfAbsent(key, "1");
 
                     if (Boolean.TRUE.equals(acquired)) {
-                        log.info("Kafka 메시지 전송 대상: {}", user.getPhoneNumber());
+                        //!TODO 로그 출력
+                        //log.info("Kafka 메시지 전송 대상: {}", user.getPhoneNumber());
 
                         redisTemplate.expire(key, java.time.Duration.ofMinutes(1));
-
-                        log.info("Kafka 전송 준비: phone={}, message={}, name={}",
-                                user.getPhoneNumber(), message, user.getName());
+                        //!TODO 로그 출력
+                        //log.info("Kafka 전송 준비: phone={}, message={}, name={}",
+                        //        user.getPhoneNumber(), message, user.getName());
 
                         messageProducer.sendMessage(user.getPhoneNumber(), message, user.getName());
                     }
