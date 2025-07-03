@@ -6,11 +6,9 @@ import io.github.hachanghyun.usermanagement.message.service.KakaoRateLimiterServ
 import io.github.hachanghyun.usermanagement.message.service.SmsRateLimiterService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Profile;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
-import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
@@ -18,68 +16,68 @@ import reactor.core.publisher.Mono;
 @Component
 @RequiredArgsConstructor
 @Profile("!test")
-@ConditionalOnProperty(name = "kafka.enabled", havingValue = "true", matchIfMissing = true)
-public class MessageConsumer {
+public class MessageConsumer20s {
 
     private final WebClient kakaoClient;
     private final WebClient smsClient;
     private final KakaoRateLimiterService kakaoRateLimiterService;
     private final SmsRateLimiterService smsRateLimiterService;
 
-    @KafkaListener(topics = "message-topic", groupId = "message-group")
+    @KafkaListener(
+            topics = "message-topic-20s",
+            groupId = "message-group-20s",
+            containerFactory = "kafkaListenerContainerFactory20s"
+    )
     public void consume(MessagePayload payload) {
-        log.info("Kafka 수신: {}", payload);
+        log.info("[20대] Kafka 수신: {}", payload);
 
         try {
             String phone = payload.getPhoneNumber();
             String message = payload.getMessage();
             String name = payload.getName();
-            //!TODO 스트링 수정
-            String fullMessage = name + "님, 안녕하세요. ㅇㅇㅇㅇㅇㅇ입니다.\n" + message;
+            String fullMessage = name + "님, 안녕하세요. ㅇㅇㅇㅇㅇㅇㅇ입니다.\n" + message;
 
             if (kakaoRateLimiterService.tryAcquire("kakao-send")) {
                 kakaoClient.post()
                         .uri("/kakaotalk-messages")
                         .bodyValue(new KakaoRequest(phone, fullMessage))
                         .retrieve()
-                        .onStatus(
-                                status -> status.is4xxClientError() || status.is5xxServerError(),
+                        .onStatus(status -> status.is4xxClientError() || status.is5xxServerError(),
                                 response -> {
-                                    log.warn("카카오톡 API 응답 오류: status={}", response.statusCode());
+                                    log.warn("[20대] 카카오톡 API 오류 - {}", response.statusCode());
                                     return Mono.error(new RuntimeException("카카오톡 전송 실패"));
-                                }
-                        )
+                                })
                         .toBodilessEntity()
-                        .doOnSuccess(r -> log.info("카카오톡 전송 성공: phone={}", phone))
+                        .doOnSuccess(r -> log.info("[20대] 카카오톡 전송 성공: {}", phone))
                         .onErrorResume(ex -> {
-                            log.warn("카카오톡 실패, SMS로 대체 전송: {}", phone);
+                            log.warn("[20대] 카카오톡 실패, SMS 전환: {}", phone);
                             return sendSmsFallback(phone, fullMessage)
                                     .then(Mono.empty()); // Mono<ResponseEntity<Void>> 타입에 맞춤
                         })
                         .subscribe();
             } else {
-                log.warn("카카오톡 분당 전송 제한 초과 - {}는 SMS로 전환", phone);
+                log.warn("[20대] 카카오톡 Rate Limit 초과 - SMS 전환: {}", phone);
                 sendSmsFallback(phone, fullMessage).subscribe();
             }
 
         } catch (Exception e) {
-            log.error("메시지 처리 중 예외 발생", e);
+            log.error("[20대] 메시지 처리 중 예외", e);
         }
     }
 
     private Mono<Void> sendSmsFallback(String phone, String fullMessage) {
         if (!smsRateLimiterService.tryAcquire("sms-send")) {
-            log.warn("SMS 분당 전송 제한 초과 - {}는 전송 제외", phone);
+            log.warn("[20대] SMS Rate Limit 초과 - 전송 제외: {}", phone);
             return Mono.empty();
         }
 
         return smsClient.post()
                 .uri(uriBuilder -> uriBuilder.path("/sms").queryParam("phone", phone).build())
-                .body(BodyInserters.fromFormData("message", fullMessage))
+                .bodyValue("message=" + fullMessage)
                 .retrieve()
                 .toBodilessEntity()
-                .doOnSuccess(r -> log.info("SMS 전송 성공: phone={}", phone))
-                .doOnError(e -> log.error("SMS 전송 실패", e))
+                .doOnSuccess(r -> log.info("[20대] SMS 전송 성공: {}", phone))
+                .doOnError(e -> log.error("[20대] SMS 전송 실패", e))
                 .then();
     }
 }

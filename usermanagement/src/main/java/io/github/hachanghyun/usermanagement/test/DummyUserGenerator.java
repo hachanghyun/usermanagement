@@ -25,52 +25,46 @@ public class DummyUserGenerator implements CommandLineRunner {
             return;
         }
 
+        // 700명: 20대
         IntStream.rangeClosed(1, 700).forEach(i -> {
-            int age = 10 + random.nextInt(70); // 10~79세 랜덤
-            String phone = String.format("010%08d", i);
-            User user = User.builder()
-                    .account("user" + i)
-                    .password("pass" + i)
-                    .name("테스트" + i)
-                    .residentRegistrationNumber(generateRRN(i))
-                    .phoneNumber(phone)
-                    .address("서울시 어딘가 " + i)
-                    .build();
-            userRepository.save(user);
+            userRepository.save(generateUser(i, "000101", "3")); // 2000년생, 남
         });
 
-        System.out.println("✅ 700명 더미 유저 생성 완료");
+        // 700명: 30대
+        IntStream.rangeClosed(701, 1400).forEach(i -> {
+            userRepository.save(generateUser(i, "900101", "1")); // 1990년생, 남
+        });
+
+        // 1600명: 기타 연령대 랜덤
+        IntStream.rangeClosed(1401, 3000).forEach(i -> {
+            String birth;
+            String gender = i % 2 == 0 ? "1" : "2";
+
+            switch (i % 5) {
+                case 0: birth = "101010"; break; // 2010년생 → 10대
+                case 1: birth = "800101"; break; // 1980년생 → 40대
+                case 2: birth = "700101"; break; // 1970년생 → 50대
+                case 3: birth = "600101"; break; // 1960년생 → 60대
+                default: birth = "500101"; break; // 1950년생 → 70대
+            }
+
+            userRepository.save(generateUser(i, birth, gender));
+        });
+
+        System.out.println("✅ 3000명 더미 유저 생성 완료");
     }
 
-    private String generateRRN(int i) {
-        int group = i % 5;
-        String birth;
-        String gender;
+    private User generateUser(int i, String birth, String gender) {
+        String rrn = birth + "-" + gender + String.format("%06d", i);
+        String phone = String.format("010%08d", i);
 
-        switch (group) {
-            case 0: // 10대
-                birth = "101010";
-                gender = "3";
-                break;
-            case 1: // 20대
-                birth = "000101";
-                gender = "3";
-                break;
-            case 2: // 30대
-                birth = "900101";
-                gender = "1";
-                break;
-            case 3: // 40대
-                birth = "800101";
-                gender = "1";
-                break;
-            default: // 50대
-                birth = "700101";
-                gender = "1";
-                break;
-        }
-
-        return birth + "-" + gender + String.format("%06d", i);
+        return User.builder()
+                .account("user" + i)
+                .password("pass" + i)
+                .name("테스트" + i)
+                .residentRegistrationNumber(rrn)
+                .phoneNumber(phone)
+                .address("서울시 어딘가 " + i)
+                .build();
     }
-
 }

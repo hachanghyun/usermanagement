@@ -18,6 +18,8 @@ import java.util.Map;
 @Configuration
 public class KafkaConfig {
 
+    // ======= Producer =======
+
     @Bean
     public ProducerFactory<String, MessagePayload> producerFactory() {
         Map<String, Object> configProps = new HashMap<>();
@@ -32,23 +34,36 @@ public class KafkaConfig {
         return new KafkaTemplate<>(producerFactory());
     }
 
-    @Bean
-    public ConsumerFactory<String, MessagePayload> consumerFactory() {
+    // ======= Consumer Factory 공통 =======
+
+    private ConsumerFactory<String, MessagePayload> createConsumerFactory(String groupId) {
         Map<String, Object> props = new HashMap<>();
         props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "kafka:9092");
-        props.put(ConsumerConfig.GROUP_ID_CONFIG, "message-group");
+        props.put(ConsumerConfig.GROUP_ID_CONFIG, groupId);
         props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class);
-        props.put(JsonDeserializer.TRUSTED_PACKAGES, "*"); // 보안상 적절히 제한 가능
+        props.put(JsonDeserializer.TRUSTED_PACKAGES, "*");
         return new DefaultKafkaConsumerFactory<>(props, new StringDeserializer(),
                 new JsonDeserializer<>(MessagePayload.class, false));
     }
 
+    // ======= ListenerContainerFactory - 20대 =======
+
     @Bean
-    public ConcurrentKafkaListenerContainerFactory<String, MessagePayload> kafkaListenerContainerFactory() {
+    public ConcurrentKafkaListenerContainerFactory<String, MessagePayload> kafkaListenerContainerFactory20s() {
         ConcurrentKafkaListenerContainerFactory<String, MessagePayload> factory =
                 new ConcurrentKafkaListenerContainerFactory<>();
-        factory.setConsumerFactory(consumerFactory());
+        factory.setConsumerFactory(createConsumerFactory("message-group-20s"));
+        return factory;
+    }
+
+    // ======= ListenerContainerFactory - 30대 =======
+
+    @Bean
+    public ConcurrentKafkaListenerContainerFactory<String, MessagePayload> kafkaListenerContainerFactory30s() {
+        ConcurrentKafkaListenerContainerFactory<String, MessagePayload> factory =
+                new ConcurrentKafkaListenerContainerFactory<>();
+        factory.setConsumerFactory(createConsumerFactory("message-group-30s"));
         return factory;
     }
 }

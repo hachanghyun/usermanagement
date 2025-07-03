@@ -101,10 +101,10 @@
 
 ## 도커 컨테이너 확인
     docker ps
-## name 으로 확인
+    ## name 으로 확인
 
 ## MariaDB 컨테이너에 접속
-    docker exec -it my-mariadb bash
+    docker exec -it mariadb bash
 
 ## mysql 클라이언트 실행 (컨테이너 안에서)
     mysql -u root -p
@@ -121,5 +121,11 @@
 
     # 특정 prefix로 필터링 (예: msg:lock:)
     curl "http://localhost:8080/dev/redis/keys?pattern=msg:lock:*"
+
+## Redis 키 조회2
+    # 모든 키 확인
+    docker exec -it full-project-redis-1 redis-cli
+    127.0.0.1:6379> keys *
+    
 
 ## pdf에 깃허브주소 추가!!!!
