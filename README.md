@@ -30,13 +30,13 @@
     curl -X GET http://localhost:8080/admin/users -u admin:1212
 
     ## 사용자 정보 수정 (예: userId=1 가정)
-    curl -X PUT http://localhost:8080/admin/users/1 \
+    curl -X PUT http://localhost:8080/admin/users/3000 \
     -u admin:1212 \
     -H "Content-Type: application/json" \
     -d '{"address": "경기도 수원시"}'
 
     ## 사용자 삭제 (예: userId=1 가정)
-    curl -X DELETE http://localhost:8080/admin/users/1 -u admin:1212
+    curl -X DELETE http://localhost:8080/admin/users/3000 -u admin:1212
 
     # 3.로그인 → JWT 토큰 획득
     curl -X POST http://localhost:8080/users/login \
@@ -45,17 +45,22 @@
     "account": "test123",
     "password": "1234"
     }'
-    # 위 명령 결과에서 "message" 필드에 있는 토큰 값을 추출한 후, 아래 명령에서 ${JWT_TOKEN} 자리에 넣어주세요.
+    # 위 명령 결과에서 "message" 필드에 있는 토큰 값을 추출한 후, 아래 명령에서 jwt 자리에 넣어주세요.
 
     # 4.로그인 한 사용자의 자신의 회원 상세 정보 조회 테스트
     curl -X GET http://localhost:8080/users/me \
-    -H "Authorization: Bearer ${JWT_TOKEN}"
+    -H "Authorization: Bearer jwt"
 
     # 5.관리자API) 연령대별 kafka 메시지 전송 테스트 
     curl -X POST http://localhost:8080/admin/messages \
     -H "Authorization: Basic YWRtaW46MTIxMg==" \
     -H "Content-Type: application/json" \
-    -d '{"ageGroup": 30, "message": "30대에게 보내는 공지입니다."}'
+    -d '{"ageGroup": 20, "message": "blabla"}'
+
+    curl -X POST http://localhost:8080/admin/messages \
+    -H "Authorization: Basic YWRtaW46MTIxMg==" \
+    -H "Content-Type: application/json" \
+    -d '{"ageGroup": 30, "message": "blabla"}'
 
 ## 카프카 관련 명령어
     # 카프카 토픽 전체 조회
@@ -92,3 +97,10 @@
     docker exec -it full-project-redis-1 redis-cli
     127.0.0.1:6379> keys *
 
+20 토픽안되는거 확인 
+# 5.관리자API) 연령대별 kafka 메시지 전송 테스트
+    curl -X POST http://localhost:8080/admin/messages \
+    -H "Authorization: Basic YWRtaW46MTIxMg==" \
+    -H "Content-Type: application/json" \
+    -d '{"ageGroup": 20, "message": "blabla"}'
+basic 보내는거 변경하기

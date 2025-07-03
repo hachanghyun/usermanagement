@@ -64,7 +64,7 @@ public class DummyUserGenerator implements CommandLineRunner {
                 .name("테스트" + i)
                 .residentRegistrationNumber(rrn)
                 .phoneNumber(phone)
-                .address("서울시 어딘가 " + i)
+                .address("서울시 강남구 " + i)
                 .build();
     }
 }

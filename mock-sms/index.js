@@ -9,7 +9,8 @@ app.post('/sms', (req, res) => {
     const phone = req.query.phone;
     const { message } = req.body;
     smsCount++;
-    console.log(`[SMS #${smsCount}] 📩 ${phone}: ${message}`);
+    console.log(`${message}`);
+    console.log(`[SMS #${smsCount}] 📩 ${phone}:`);
     res.json({ result: 'OK' });
 });
 

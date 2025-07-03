@@ -8,7 +8,8 @@ let kakaoCount = 0;
 app.post('/kakaotalk-messages', (req, res) => {
     const { phone, message } = req.body;
     kakaoCount++;
-    console.log(`[KAKAO #${kakaoCount}] 📩 ${phone}: ${message}`);
+    console.log(`${message}`);
+    console.log(`[KAKAO #${kakaoCount}] 📩 ${phone}:`);
     res.sendStatus(200);
 });
 

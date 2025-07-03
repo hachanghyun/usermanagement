@@ -26,8 +26,7 @@ public class MessageConsumer20s {
     @KafkaListener(
             topics = "message-topic-20s",
             groupId = "message-group-20s",
-            containerFactory = "kafkaListenerContainerFactory20s"
-    )
+            containerFactory = "kafkaListenerContainerFactory20s")
     public void consume(MessagePayload payload) {
         log.info("[20대] Kafka 수신: {}", payload);
 
