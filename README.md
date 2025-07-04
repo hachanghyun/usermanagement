@@ -19,7 +19,7 @@
 ### 쉘파일 실행 (macOS, Linux)
     chmod +x docker-init.sh
     ./docker-init.sh
-### 쉘파일 실행 (Windows)
+### 쉘파일 실행 (Windows cmd 실행)
     docker-init.bat
 <img width="1311" alt="스크린샷 2025-07-04 오후 4 18 05" src="https://github.com/user-attachments/assets/0980ba2b-e6b3-4366-accb-9c688ab55515" />
 
