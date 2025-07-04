@@ -21,10 +21,10 @@
     ./docker-init.sh
 <img width="1311" alt="스크린샷 2025-07-04 오후 4 18 05" src="https://github.com/user-attachments/assets/0980ba2b-e6b3-4366-accb-9c688ab55515" />
 
-### 쉘파일 실행 (Windows cmd 실행)
+### 배치파일 실행 (Windows cmd 실행)
     docker-init.bat
 
-## 3. curl 명령어로 API 과제 테스트 (windows)
+## 3. curl 명령어로 API 과제 테스트 (windows cmd 실행)
 
 ### 1) 회원가입 API 테스트
     curl -X POST http://localhost:8080/users/signup -H "Content-Type: application/json" -d "{\"account\":\"test123\",\"password\":\"1234\",\"name\":\"하창현\",\"residentRegistrationNumber\":\"9001011234567\",\"phoneNumber\":\"01012345678\",\"address\":\"서울특별시 금천구\"}"
