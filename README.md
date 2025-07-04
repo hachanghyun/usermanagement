@@ -15,7 +15,7 @@
 ## 1. 도커 설치
     - Docker Desktop 설치: https://www.docker.com/products/docker-desktop
 
-## 2. 쉘파일(도커) 실행 
+## 2. 쉘 or 배치 파일(도커) 실행 
 ### 쉘파일 실행 (macOS, Linux)
     chmod +x docker-init.sh
     ./docker-init.sh
