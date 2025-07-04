@@ -47,11 +47,11 @@
 
 #### 3) 로그인 → JWT 토큰 획득
     curl -X POST http://localhost:8080/users/login -H "Content-Type: application/json" -d "{\"account\":\"test123\",\"password\":\"1234\"}"
-    로그인 결과에서 message에 있는 JWT 토큰 추출 필요
+##### 로그인 결과에서 message에 있는 JWT 토큰 추출 필요
 
 #### 4) 로그인 사용자 자신의 회원 정보 조회 (JWT 토큰 필요)
     curl -X GET http://localhost:8080/users/me -H "Authorization: Bearer jwt"
-    위 명령의 jwt 자리에 실제 토큰 문자열 삽입
+##### 위 명령의 jwt 자리에 실제 토큰 문자열 삽입
 
 #### 5) 관리자 API – 연령대별 Kafka 메시지 전송
 
