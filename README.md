@@ -15,10 +15,12 @@
 ## 1. 도커 설치
     - Docker Desktop 설치: https://www.docker.com/products/docker-desktop
 
-## 2. 쉘파일(도커) 실행, (윈도우 운영체제 git bash에서 실행)
-### 쉘파일 실행
+## 2. 쉘파일(도커) 실행 
+### 쉘파일 실행 (macOS, Linux)
     chmod +x docker-init.sh
     ./docker-init.sh
+### 쉘파일 실행 (Windows)
+    docker-init.bat
 <img width="1311" alt="스크린샷 2025-07-04 오후 4 18 05" src="https://github.com/user-attachments/assets/0980ba2b-e6b3-4366-accb-9c688ab55515" />
 
 
