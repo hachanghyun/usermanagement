@@ -23,9 +23,46 @@
     docker-init.bat
 <img width="1311" alt="스크린샷 2025-07-04 오후 4 18 05" src="https://github.com/user-attachments/assets/0980ba2b-e6b3-4366-accb-9c688ab55515" />
 
+## 3. curl 명령어로 API 과제 테스트 (windows)
+
+### 1) 회원가입 API 테스트
+    curl -X POST http://localhost:8080/users/signup -H "Content-Type: application/json" -d "{\"account\":\"test123\",\"password\":\"1234\",\"name\":\"하창현\",\"residentRegistrationNumber\":\"9001011234567\",\"phoneNumber\":\"01012345678\",\"address\":\"서울특별시 금천구\"}"
+### 2) 시스템 관리자 API 테스트
+
+#### 2-1. 전체 사용자 조회 (페이지=1, size=30)
+    curl -X GET "http://localhost:8080/admin/users?page=1&size=30" -u admin:1212
+
+#### 2-2. 사용자 정보 수정
+##### 주소만 변경
+    curl -X PUT http://localhost:8080/admin/users/3000 -u admin:1212 -H "Content-Type: application/json" -d "{\"address\":\"경기도 수원시\"}"
+
+##### 비밀번호만 변경:
+    curl -X PUT http://localhost:8080/admin/users/3000 -u admin:1212 -H "Content-Type: application/json" -d "{\"password\":\"newPassword123\"}"
+
+##### 비밀번호 + 주소 변경:
+    curl -X PUT http://localhost:8080/admin/users/3000 -u admin:1212 -H "Content-Type: application/json" -d "{\"password\":\"newPassword123\",\"address\":\"서울시 송파구\"}"
+
+#### 2-3. 사용자 삭제
+    curl -X DELETE http://localhost:8080/admin/users/3000 -u admin:1212
+
+#### 3) 로그인 → JWT 토큰 획득
+    curl -X POST http://localhost:8080/users/login -H "Content-Type: application/json" -d "{\"account\":\"test123\",\"password\":\"1234\"}"
+    로그인 결과에서 message에 있는 JWT 토큰 추출 필요
+
+#### 4) 로그인 사용자 자신의 회원 정보 조회 (JWT 토큰 필요)
+    curl -X GET http://localhost:8080/users/me -H "Authorization: Bearer jwt"
+    위 명령의 jwt 자리에 실제 토큰 문자열 삽입
+
+#### 5) 관리자 API – 연령대별 Kafka 메시지 전송
+
+##### 20대 메시지 전송:
+    curl -X POST http://localhost:8080/admin/messages -u admin:1212 -H "Content-Type: application/json" -d "{\"ageGroup\":20,\"message\":\"blabla\"}"
+
+##### 30대 메시지 전송:
+    curl -X POST http://localhost:8080/admin/messages -u admin:1212 -H "Content-Type: application/json" -d "{\"ageGroup\":30,\"message\":\"blabla\"}"
 
 
-## 3. curl 명령어로 API 과제 테스트
+## 3. curl 명령어로 API 과제 테스트 (macOS, Linux)
 ### 1).회원가입 API 테스트
     curl -X POST http://localhost:8080/users/signup \
     -H "Content-Type: application/json" \
