@@ -1,3 +1,16 @@
+# 기술 스택
+| 항목        | 사용 기술                                                    |
+|-------------|--------------------------------------------------------------|
+| 언어        | Java 17                                                     |
+| 프레임워크  | Spring Boot 3.5.3, Spring Data JPA                           |
+| 빌드 도구   | Gradle                                                      |
+| 데이터베이스 | H2 Database                                                 |
+| 인증/보안   | JWT, Spring Security                                        |
+| 메시지 큐   | Apache Kafka                                                |
+| 캐시/속도 제한 | Redis                                                     |
+| 문서화 도구 | Swagger UI (OpenAPI 3)                                      |
+| 기타 도구   | Lombok, Docker                                              |
+
 # 프로젝트 실행 방법
 ## 1. 도커 설치
     - Docker Desktop 설치: https://www.docker.com/products/docker-desktop
@@ -56,7 +69,6 @@
     Kafka 토픽 매핑 정보
     - 20대 → topic: message-topic-20s
     - 30대 → topic: message-topic-30s
-    - 기타 연령대는 현재 미지원 (전송 시 IllegalArgumentException 발생)
 
     20대 대상 메시지 전송
     curl -X POST http://localhost:8080/admin/messages \
