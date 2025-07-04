@@ -21,9 +21,9 @@ public class MessageService {
     private final RedisTemplate<String, String> redisTemplate;
 
     public void sendMessagesByAgeGroup(String ageGroupText, String message) {
-        int age;
+        int targetAge;
         try {
-            age = Integer.parseInt(ageGroupText.replaceAll("[^0-9]", ""));
+            targetAge = Integer.parseInt(ageGroupText.replaceAll("[^0-9]", ""));
         } catch (NumberFormatException e) {
             throw new IllegalArgumentException("올바르지 않은 연령대 형식입니다. 예: 20대, 30대");
         }
@@ -35,14 +35,24 @@ public class MessageService {
         users.stream()
                 .filter(user -> {
                     String rrn = user.getResidentRegistrationNumber();
-                    if (rrn == null || rrn.length() < 2) return false;
+                    if (rrn == null || rrn.length() < 8) return false;
 
-                    int birthYearPrefix = rrn.charAt(6) < '3' ? 1900 : 2000;
+                    char genderCode = rrn.charAt(7);
+                    int birthYearPrefix;
+
+                    if (genderCode == '1' || genderCode == '2') {
+                        birthYearPrefix = 1900;
+                    } else if (genderCode == '3' || genderCode == '4') {
+                        birthYearPrefix = 2000;
+                    } else {
+                        log.warn("⚠️ 잘못된 주민번호 성별코드: {}, rrn={}", genderCode, rrn);
+                        return false;
+                    }
+
                     int birthYear = birthYearPrefix + Integer.parseInt(rrn.substring(0, 2));
                     int userAge = currentYear - birthYear;
 
-                    // 연령대 필터링
-                    return (userAge / 10) * 10 == age;
+                    return (userAge / 10) * 10 == targetAge;
                 })
                 .forEach(user -> {
                     String key = "msg:lock:" + user.getPhoneNumber();
@@ -54,14 +64,18 @@ public class MessageService {
                         String phone = user.getPhoneNumber();
                         String name = user.getName();
                         String rrn = user.getResidentRegistrationNumber();
-                        int birthYearPrefix = rrn.charAt(6) < '3' ? 1900 : 2000;
+                        char genderCode = rrn.charAt(7);
+                        int birthYearPrefix = (genderCode == '1' || genderCode == '2') ? 1900 : 2000;
                         int birthYear = birthYearPrefix + Integer.parseInt(rrn.substring(0, 2));
 
                         log.info("Kafka 전송 준비: phone={}, message={}, name={}, birthYear={}", phone, message, name, birthYear);
 
-                        messageProducer.sendMessage(phone, message, name, birthYear);
+                        try {
+                            messageProducer.sendMessage(phone, message, name, birthYear);
+                        } catch (IllegalArgumentException e) {
+                            log.warn("❌ Kafka 전송 제외 대상: {} (이유: {})", phone, e.getMessage());
+                        }
                     }
                 });
     }
-
 }

@@ -24,15 +24,19 @@ public class MessageProducer {
         MessagePayload payload = new MessagePayload(phone, message, name);
         String topic = resolveTopic(birthYear);
 
+        if (topic == null) {
+            throw new IllegalArgumentException("지원하지 않는 연령대: " + (LocalDate.now().getYear() - birthYear));
+        }
+
         log.info("Kafka 전송 → topic: {}, payload: {}", topic, payload);
         CompletableFuture<SendResult<String, MessagePayload>> future = kafkaTemplate.send(topic, payload);
 
         future.whenComplete((result, ex) -> {
             if (ex == null) {
                 RecordMetadata meta = result.getRecordMetadata();
-                log.info("Kafka 전송 성공: payload={}, offset={}, partition={}", payload, meta.offset(), meta.partition());
+                log.info("✅ Kafka 전송 성공: payload={}, offset={}, partition={}", payload, meta.offset(), meta.partition());
             } else {
-                log.error("Kafka 전송 실패: payload={}, error={}", payload, ex.getMessage());
+                log.error("❌ Kafka 전송 실패: payload={}, error={}", payload, ex.getMessage());
             }
         });
     }
@@ -43,6 +47,6 @@ public class MessageProducer {
 
         if (age >= 20 && age < 30) return "message-topic-20s";
         else if (age >= 30 && age < 40) return "message-topic-30s";
-        else throw new IllegalArgumentException("지원하지 않는 연령대: " + age);
+        else return null; // 지원하지 않는 연령대는 처리하지 않음
     }
 }
