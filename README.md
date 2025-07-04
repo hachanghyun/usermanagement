@@ -147,12 +147,15 @@
     -u admin:1212 \
     -H "Content-Type: application/json" \
     -d '{"ageGroup": 20, "message": "blabla"}'
+<img width="980" alt="스크린샷 2025-07-04 오후 10 26 27" src="https://github.com/user-attachments/assets/853ca0d8-1649-4f9b-8f1c-3c99bde287e1" />
+
 
 #### 30대 대상 메시지 전송
     curl -X POST http://localhost:8080/admin/messages \
     -u admin:1212 \
     -H "Content-Type: application/json" \
     -d '{"ageGroup": 30, "message": "blabla"}'
+<img width="998" alt="스크린샷 2025-07-04 오후 10 26 44" src="https://github.com/user-attachments/assets/203db74b-9d2d-4ae6-874a-a2732905bcba" />
 
 # 부록 (카프카, MariaDB, Redis 관련 명령어)
 ## 도커 로그 확인
