@@ -4,19 +4,6 @@
 | ChatGPT (GPT-4o)  | 시스템 아키텍처 설계, Kafka/Redis 설계, 인증 처리, 예외 처리 등 |
 | GitHub Copilot    | 반복적인 코드 작성, JPA 쿼리 생성, 템플릿 코드 자동 완성 등| 
 
-## 기술 스택
-    - Java 17
-    - Spring Boot 3.5.3
-    - Spring Data JPA
-    - Gradle
-    - H2 Database
-    - Lombok
-    - Swagger UI (OpenAPI 3)
-    - Kafka
-    - Redis
-    - JWT 인증
-    - Docker
-
 ## 회원가입 기능
 
 ### 목적
@@ -29,6 +16,9 @@
     비밀번호는 평문 저장  
     인증은 필요 없음  
     JPA와 Lombok 사용
+    기술 스택은 아래와 같이 사용
+    Java 17, Spring Boot 3.5.3, Spring Data JPA, Gradle, H2 Database
+    Lombok, Swagger UI, Kafka, Redis, JWT, Docker
 
 ## 관리자 API
 
@@ -42,6 +32,7 @@
     수정은 비밀번호나 주소 중 하나만 또는 둘 다 수정 가능해야 함  
     삭제 API도 포함  
     JPA와 DTO 구조로 설계
+    기술스택은 이전과 같이
 
 ## Kafka 메시지 전송 (연령대별 토픽 분리)
 
@@ -53,6 +44,7 @@
     연령대에 따라 토픽을 다르게 전송하고 싶어
     JSON 직렬화 사용  
     연령대 구분은 주민등록번호로 처리
+    기술스택은 이전과 같이
 
 ## Kafka Consumer 분리
 
@@ -63,6 +55,7 @@
     Kafka Consumer 클래스를 연령대별로 나누고  
     각 토픽을 각각 구독하도록 구성해줘
     Listener 설정은 각 클래스에 따로 적용
+    기술스택은 이전과 같이
 
 ## Redis 중복 전송 방지
 

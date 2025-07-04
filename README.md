@@ -15,7 +15,7 @@
 ## 1. 도커 설치
     - Docker Desktop 설치: https://www.docker.com/products/docker-desktop
 
-## 2. 쉘파일(도커) 실행
+## 2. 쉘파일(도커) 실행, (윈도우 운영체제 git bash에서 실행)
     쉘파일 실행
     chmod +x docker-init.sh
     ./docker-init.sh
