@@ -34,16 +34,29 @@
     }'
 
 ### 2).시스템 관리자 API 테스트
-#### 2-1. 전체 사용자 조회
-    curl -X GET http://localhost:8080/admin/users -u admin:1212
+#### 2-1. 전체 사용자 조회 (예: 페이징1 페이지당 30명)
+    curl -X GET "http://localhost:8080/admin/users?page=1&size=30" -u admin:1212
 
-#### 2-2. 사용자 정보 수정 (예: userId=1 가정)
+#### 2-2. 사용자 정보 수정 (예: userId=3000 가정)
+##### 주소만 변경
     curl -X PUT http://localhost:8080/admin/users/3000 \
     -u admin:1212 \
     -H "Content-Type: application/json" \
     -d '{"address": "경기도 수원시"}'
 
-#### 2-3. 사용자 삭제 (예: userId=1 가정)
+##### 비밀번호 변경
+    curl -X PUT http://localhost:8080/admin/users/3000 \
+    -u admin:1212 \
+    -H "Content-Type: application/json" \
+    -d '{"password": "newPassword123"}'
+
+##### 비밀번호, 주소 변경
+    curl -X PUT http://localhost:8080/admin/users/3000 \
+    -u admin:1212 \
+    -H "Content-Type: application/json" \
+    -d '{"password": "newPassword123", "address": "서울시 송파구"}'
+
+#### 2-3. 사용자 삭제 (예: userId=3000 가정)
     curl -X DELETE http://localhost:8080/admin/users/3000 -u admin:1212
 
 ### 3).로그인 → JWT 토큰 획득
@@ -53,6 +66,7 @@
     "account": "test123",
     "password": "1234"
     }'
+
 #### 위 명령 결과에서 "message" 필드에 있는 토큰 값을 추출한 후, 아래 명령에서 jwt 자리에 넣어주세요.
 
 ### 4).로그인 한 사용자의 자신의 회원 상세 정보 조회 테스트
@@ -109,8 +123,8 @@
     password: rootpass
 
 ### 원하는 데이터베이스 선택 후 쿼리 실행
-    show <databases>;
-    use <db>;
+    show databases;
+    use userdb; 
     SELECT * FROM users;
 
 ## Redis 관련 명령어
