@@ -19,7 +19,8 @@
 ### 쉘파일 실행
     chmod +x docker-init.sh
     ./docker-init.sh
-<img width="78" alt="스크린샷 2025-07-04 오후 4 17 31" src="https://github.com/user-attachments/assets/e7b71150-9a32-4350-8f1c-e8011e84e1f7" />
+<img width="1311" alt="스크린샷 2025-07-04 오후 4 18 05" src="https://github.com/user-attachments/assets/0980ba2b-e6b3-4366-accb-9c688ab55515" />
+
 
 
 ## 3. curl 명령어로 API 과제 테스트
