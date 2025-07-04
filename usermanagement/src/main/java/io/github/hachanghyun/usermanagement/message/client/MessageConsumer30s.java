@@ -34,7 +34,7 @@ public class MessageConsumer30s {
             String phone = payload.getPhoneNumber();
             String message = payload.getMessage();
             String name = payload.getName();
-            String fullMessage = name + "님, 안녕하세요. ㅇㅇㅇㅇㅇㅇ입니다.\n" + message;
+            String fullMessage = name + "님, 안녕하세요. 현대 오토에버입니다.\n" + message;
 
             if (kakaoRateLimiterService.tryAcquire("kakao-send")) {
                 kakaoClient.post()
