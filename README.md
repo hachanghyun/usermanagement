@@ -4,7 +4,7 @@
 | 언어        | Java 17                                                     |
 | 프레임워크  | Spring Boot 3.5.3, Spring Data JPA                           |
 | 빌드 도구   | Gradle                                                      |
-| 데이터베이스 | H2 Database                                                 |
+| 데이터베이스 | H2 Database, MariaDB                                        |
 | 인증/보안   | JWT, Spring Security                                        |
 | 메시지 큐   | Apache Kafka                                                |
 | 캐시/속도 제한 | Redis                                                     |
